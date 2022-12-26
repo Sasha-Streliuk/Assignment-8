@@ -1,6 +1,6 @@
 import pgzrun
 import random
-
+from pgzero.actor import Actor
 
 WIDTH = 600
 HEIGHT = 800
@@ -21,7 +21,7 @@ class Paddle:
 
 
 class Ball:
-    def __init__(self, speed=-1):
+    def __init__(self, speed: int):
         self.actor = Actor('ball.png', center=(WIDTH // 2, HEIGHT//2))
         self.speed = speed
         self.ball_dx = self.speed
