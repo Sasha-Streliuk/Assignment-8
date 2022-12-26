@@ -38,18 +38,35 @@ class Ball:
         if not (0 <= ball.actor.y <= HEIGHT):
             self.ball_dy *= -1
 
+        if ball.actor.y == HEIGHT:
+            self.actor.y = HEIGHT // 2
+            self.actor.x = WIDTH // 2
+
+    def draw(self):
+        self.actor.draw()
+
+
+class Heart:
+    def __init__(self,x,full):
+        self.actor = Actor('heart.png', center=(20+26*x,22))
+        self.full = full
+
     def draw(self):
         self.actor.draw()
 
 
 paddle = Paddle()
 ball = Ball(speed=5)
-
+hearts_alive = []
+for i in range(3):
+    hearts_alive.append(Heart(i,1))
 
 def draw():
     screen.clear()
     paddle.draw()
     ball.draw()
+    for heart in hearts_alive:
+        heart.draw()
 
 
 def update(dt):
