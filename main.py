@@ -2,6 +2,7 @@ import pgzrun
 import random
 from pgzero.actor import Actor
 import pyautogui
+import math
 
 WIDTH = 600
 HEIGHT = 800
@@ -61,7 +62,7 @@ class Heart:
 
 
 class Obstacle:
-    def __init__(self, x, y, radius=10, color='red'):
+    def __init__(self, x, y, radius=11, color='red'):
         self.pos = (x, y)
         self.radius = radius
         self.color = color
@@ -72,6 +73,11 @@ class Obstacle:
             screen.draw.filled_circle(self.pos, self.radius, self.color)
         else:
             pass
+
+    def hits(self, ball: Ball):
+        distance = math.sqrt((ball.actor.x - self.pos[0])**2 +(ball.actor.y - self.pos[1])**2)
+        return distance < 20
+
 
 
 def create_barriers(n, dy, colors):
@@ -115,6 +121,9 @@ def draw():
 def update(dt):
     ball.update()
     paddle.update(ball)
+    for item in barriers:
+        if item.hits(ball):
+            barriers.remove(item)
 
 
 def on_mouse_move(pos):
