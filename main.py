@@ -1,6 +1,7 @@
 import pgzrun
 import random
 from pgzero.actor import Actor
+import pyautogui
 
 WIDTH = 600
 HEIGHT = 800
@@ -43,6 +44,7 @@ class Ball:
             global hearts_alive
             hearts_alive.pop(len(hearts_alive)-1)
             if len(hearts_alive) == 0:
+                pyautogui.alert("YOU'VE LOST")
                 exit()
             self.actor.y = HEIGHT // 2
             self.actor.x = WIDTH // 2
