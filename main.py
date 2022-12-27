@@ -28,6 +28,7 @@ class Ball:
         self.ball_dy = self.speed
         self.radius = 11
 
+
     def update(self):
         self.actor.x += self.ball_dx
         self.actor.y += self.ball_dy
@@ -39,6 +40,10 @@ class Ball:
             self.ball_dy *= -1
 
         if ball.actor.y == HEIGHT:
+            global hearts_alive
+            hearts_alive.pop(len(hearts_alive)-1)
+            if len(hearts_alive) == 0:
+                exit()
             self.actor.y = HEIGHT // 2
             self.actor.x = WIDTH // 2
 
@@ -47,19 +52,18 @@ class Ball:
 
 
 class Heart:
-    def __init__(self,x,full):
+    def __init__(self,x):
         self.actor = Actor('heart.png', center=(20+26*x,22))
-        self.full = full
 
     def draw(self):
         self.actor.draw()
 
 
 paddle = Paddle()
-ball = Ball(speed=5)
 hearts_alive = []
 for i in range(3):
-    hearts_alive.append(Heart(i,1))
+    hearts_alive.append(Heart(i))
+ball = Ball(5)
 
 def draw():
     screen.clear()
