@@ -29,7 +29,6 @@ class Ball:
         self.ball_dy = self.speed
         self.radius = 11
 
-
     def update(self):
         self.actor.x += self.ball_dx
         self.actor.y += self.ball_dy
@@ -61,11 +60,47 @@ class Heart:
         self.actor.draw()
 
 
+class Obstacle:
+    def __init__(self, x, y, radius=10, color='red'):
+        self.pos = (x, y)
+        self.radius = radius
+        self.color = color
+        self.status = True
+
+    def draw(self):
+        if self.status:
+            screen.draw.filled_circle(self.pos, self.radius, self.color)
+        else:
+            pass
+
+
+def create_barriers(n, dy, colors):
+
+    barriers = []
+    dx = WIDTH // (n + 1)
+    for i in range(n):
+        barriers.append(
+            Obstacle(dx * (i + 1), dy, color=random.choice(colors))
+        )
+
+    for i in range(n - 1):
+        curr = barriers[i]
+        next = barriers[i + 1]
+        barriers.append(
+            Obstacle(curr.pos[0] + (next.pos[0] - curr.pos[0]) // 2, dy + 30, color=random.choice(colors))
+        )
+    return barriers
+
+
 paddle = Paddle()
 hearts_alive = []
 for i in range(3):
     hearts_alive.append(Heart(i))
 ball = Ball(5)
+
+colors = ['red', 'green', 'yellow', 'blue']
+barriers = create_barriers(10, 70, colors)
+
 
 def draw():
     screen.clear()
@@ -73,6 +108,8 @@ def draw():
     ball.draw()
     for heart in hearts_alive:
         heart.draw()
+    for item in barriers:
+        item.draw()
 
 
 def update(dt):
