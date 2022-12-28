@@ -129,8 +129,10 @@ def update(dt):
         if barrier.hits(ball):
             barriers.remove(barrier)
             ball.hits()
-
-
+    if len(barriers) == 0:
+        pyautogui.alert("YOU'VE WON!")
+        exit()
+        
 def on_mouse_move(pos):
     x, y = pos
     paddle.actor.x = x
