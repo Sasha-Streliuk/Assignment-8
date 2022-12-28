@@ -49,6 +49,10 @@ class Ball:
             self.actor.y = HEIGHT // 2
             self.actor.x = WIDTH // 2
 
+    def hits(self):
+        ball.ball_dy *= -1
+        ball.ball_dx *= 1 if random.randint(0, 1) else -1
+
     def draw(self):
         self.actor.draw()
 
@@ -121,9 +125,10 @@ def draw():
 def update(dt):
     ball.update()
     paddle.update(ball)
-    for item in barriers:
-        if item.hits(ball):
-            barriers.remove(item)
+    for barrier in barriers:
+        if barrier.hits(ball):
+            barriers.remove(barrier)
+            ball.hits()
 
 
 def on_mouse_move(pos):
