@@ -3,6 +3,7 @@ import random
 from pgzero.actor import Actor
 import pyautogui
 import math
+import pygame
 
 WIDTH = 600
 HEIGHT = 800
@@ -104,13 +105,27 @@ def create_barriers(n, dy, colors):
 class BigPlatform:
     def __init__(self):
         self.actor = Actor('big_platform.png', center=(WIDTH // 2, 0))
+        self.last = pygame.time.get_ticks()
+        self.cooldown = 10000
 
     def update(self):
         self.actor.x += 1 if random.randint(0, 1) else 0
         self.actor.y += 5
+
         if self.actor.colliderect(paddle.actor):
             self.actor.x = 500
-            self.actor.y = 900
+            self.actor.y = HEIGHT + 50
+            paddle.actor = Actor('big_paddle.png',center=(paddle.actor.x, paddle.actor.y))
+            self.last = pygame.time.get_ticks()
+
+        now = pygame.time.get_ticks()
+        if now - self.last >= self.cooldown:
+            self.last = now
+            paddle.actor = Actor('paddle.png',center=(paddle.actor.x, paddle.actor.y))
+
+        if self.actor.y > HEIGHT + 50 and random.randint(0,10000) < 5:
+            self.actor.x = WIDTH // 2
+            self.actor.y = 0
 
     def draw(self):
         self.actor.draw()
