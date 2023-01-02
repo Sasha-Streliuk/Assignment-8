@@ -101,12 +101,28 @@ def create_barriers(n, dy, colors):
         )
     return barriers
 
+class BigPlatform:
+    def __init__(self):
+        self.actor = Actor('big_platform.png', center=(WIDTH // 2, 0))
+
+    def update(self):
+        self.actor.x += 1 if random.randint(0, 1) else 0
+        self.actor.y += 5
+        if self.actor.colliderect(paddle.actor):
+            self.actor.x = 500
+            self.actor.y = 900
+
+    def draw(self):
+        self.actor.draw()
+
+
 
 paddle = Paddle()
 hearts_alive = []
 for i in range(3):
     hearts_alive.append(Heart(i))
 ball = Ball(5)
+platform = BigPlatform()
 
 colors = ['red', 'green', 'yellow', 'blue']
 barriers = create_barriers(10, 70, colors)
@@ -116,6 +132,7 @@ def draw():
     screen.clear()
     paddle.draw()
     ball.draw()
+    platform.draw()
     for heart in hearts_alive:
         heart.draw()
     for item in barriers:
@@ -125,6 +142,7 @@ def draw():
 def update(dt):
     ball.update()
     paddle.update(ball)
+    platform.update()
     for barrier in barriers:
         if barrier.hits(ball):
             barriers.remove(barrier)
