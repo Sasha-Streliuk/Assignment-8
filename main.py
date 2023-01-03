@@ -71,12 +71,30 @@ class HeartBonusLife:
         self.actor = Actor('heart.png', center=(x, y))
         self.last = pygame.time.get_ticks()
         self.cooldown = generate_time * 1000
+        self.hide = True
 
     def draw(self):
         self.actor.draw()
 
     def update(self):
-        pass
+        global hearts_alive
+        if not self.hide:
+            self.actor.y += 5
+
+        if self.actor.colliderect(paddle.actor):
+            hearts_alive.append(Heart(len(hearts_alive)))
+            self.actor.pos = (-10, -10)
+            self.hide = True
+
+        if self.actor.y > HEIGHT + 20:
+            self.actor.pos = (-10, -10)
+            self.hide = True
+
+        now = pygame.time.get_ticks()
+        if now - self.last >= self.cooldown:
+            self.last = now
+            self.hide = False
+            self.actor.pos = (random.randint(10, WIDTH - 10), 0)
 
 
 class Obstacle:
