@@ -66,6 +66,19 @@ class Heart:
         self.actor.draw()
 
 
+class HeartBonusLife:
+    def __init__(self, x, y, generate_time: int):
+        self.actor = Actor('heart.png', center=(x, y))
+        self.last = pygame.time.get_ticks()
+        self.cooldown = generate_time * 1000
+
+    def draw(self):
+        self.actor.draw()
+
+    def update(self):
+        pass
+
+
 class Obstacle:
     def __init__(self, x, y, radius=11, color='red'):
         self.pos = (x, y)
@@ -84,7 +97,6 @@ class Obstacle:
         return distance < 20
 
 
-
 def create_barriers(n, dy, colors):
 
     barriers = []
@@ -101,6 +113,7 @@ def create_barriers(n, dy, colors):
             Obstacle(curr.pos[0] + (next.pos[0] - curr.pos[0]) // 2, dy + 30, color=random.choice(colors))
         )
     return barriers
+
 
 class BigPlatform:
     def __init__(self):
@@ -131,13 +144,13 @@ class BigPlatform:
         self.actor.draw()
 
 
-
 paddle = Paddle()
 hearts_alive = []
 for i in range(3):
     hearts_alive.append(Heart(i))
 ball = Ball(5)
 platform = BigPlatform()
+heart_bonus = HeartBonusLife(random.randint(10, WIDTH-10), -10, 30)
 
 colors = ['red', 'green', 'yellow', 'blue']
 barriers = create_barriers(10, 70, colors)
@@ -148,6 +161,7 @@ def draw():
     paddle.draw()
     ball.draw()
     platform.draw()
+    heart_bonus.draw()
     for heart in hearts_alive:
         heart.draw()
     for item in barriers:
@@ -158,6 +172,7 @@ def update(dt):
     ball.update()
     paddle.update(ball)
     platform.update()
+    heart_bonus.update()
     for barrier in barriers:
         if barrier.hits(ball):
             barriers.remove(barrier)
@@ -165,7 +180,8 @@ def update(dt):
     if len(barriers) == 0:
         pyautogui.alert("YOU'VE WON!")
         exit()
-        
+
+
 def on_mouse_move(pos):
     x, y = pos
     paddle.actor.x = x
