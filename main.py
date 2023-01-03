@@ -1,7 +1,6 @@
 import pgzrun
 import random
 from pgzero.actor import Actor
-import pyautogui
 import math
 import pygame
 
@@ -43,10 +42,10 @@ class Ball:
 
         if ball.actor.y == HEIGHT:
             global hearts_alive
+            global loss
             hearts_alive.pop(len(hearts_alive)-1)
             if len(hearts_alive) == 0:
-                pyautogui.alert("YOU'VE LOST")
-                exit()
+                loss = True
             self.actor.y = HEIGHT // 2
             self.actor.x = WIDTH // 2
 
@@ -162,6 +161,7 @@ class BigPlatform:
         self.actor.draw()
 
 
+loss = False
 paddle = Paddle()
 hearts_alive = []
 for i in range(3):
@@ -175,6 +175,8 @@ barriers = create_barriers(10, 70, colors)
 
 
 def draw():
+    if loss:
+        return
     screen.clear()
     paddle.draw()
     ball.draw()
@@ -187,6 +189,12 @@ def draw():
 
 
 def update(dt):
+    if loss:
+        screen.draw.text('Game Over', (170, 350), color="purple", fontsize=75)
+        return
+    if len(barriers) == 0:
+        screen.draw.txt('   Win   ', (170, 350), color="purple", fontsize=75)
+        return
     ball.update()
     paddle.update(ball)
     platform.update()
@@ -195,9 +203,6 @@ def update(dt):
         if barrier.hits(ball):
             barriers.remove(barrier)
             ball.hits()
-    if len(barriers) == 0:
-        pyautogui.alert("YOU'VE WON!")
-        exit()
 
 
 def on_mouse_move(pos):
