@@ -97,30 +97,27 @@ class HeartBonusLife:
 
 
 class Obstacle:
-    def __init__(self, x, y, radius=11, color='red'):
+    def __init__(self, x, y, width=40, height=20, color='red'):
         self.pos = (x, y)
-        self.radius = radius
         self.color = color
-        self.status = True
+        self.width = width
+        self.height = height
 
     def draw(self):
-        if self.status:
-            screen.draw.filled_circle(self.pos, self.radius, self.color)
-        else:
-            pass
+        screen.draw.filled_rect(Rect(self.pos, (self.width, self.height)), self.color)
 
     def hits(self, ball: Ball):
         distance = math.sqrt((ball.actor.x - self.pos[0])**2 +(ball.actor.y - self.pos[1])**2)
         return distance < 20
 
 
-def create_barriers(n, dy, colors):
+def create_barriers(n, dy, width, colors):
 
     barriers = []
-    dx = WIDTH // (n + 1)
+    dx = (WIDTH - n * width) // (n + 1)
     for i in range(n):
         barriers.append(
-            Obstacle(dx * (i + 1), dy, color=random.choice(colors))
+            Obstacle(dx * (i + 1) + width * i, dy, color=random.choice(colors))
         )
 
     for i in range(n - 1):
@@ -171,7 +168,7 @@ platform = BigPlatform()
 heart_bonus = HeartBonusLife(random.randint(10, WIDTH-10), -10, 30)
 
 colors = ['red', 'green', 'yellow', 'blue']
-barriers = create_barriers(10, 70, colors)
+barriers = create_barriers(10, 70, 40, colors)
 
 
 def draw():
@@ -190,10 +187,10 @@ def draw():
 
 def update(dt):
     if loss:
-        screen.draw.text('Game Over', (170, 350), color="purple", fontsize=75)
+        screen.draw.text('Game Over', (170, 350), color="yellow", fontsize=75)
         return
     if len(barriers) == 0:
-        screen.draw.txt('   Win   ', (170, 350), color="purple", fontsize=75)
+        screen.draw.txt('   Win   ', (170, 350), color="yellow", fontsize=75)
         return
     ball.update()
     paddle.update(ball)
