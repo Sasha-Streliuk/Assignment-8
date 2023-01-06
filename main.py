@@ -108,7 +108,7 @@ class Obstacle:
 
     def hits(self, ball: Ball):
         distance = math.sqrt((ball.actor.x - self.pos[0])**2 +(ball.actor.y - self.pos[1])**2)
-        return distance < 20
+        return (abs(self.pos[0] - ball.actor.x) < 20) and (abs(self.pos[1] - ball.actor.y) < 10)
 
 
 def create_barriers(n, dy, width, colors):
