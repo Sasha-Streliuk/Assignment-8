@@ -1,11 +1,11 @@
 import pgzrun
 import random
 from pgzero.actor import Actor
-import math
 import pygame
 
 WIDTH = 600
 HEIGHT = 800
+COLORS = {'red': 1, 'green': 2, 'yellow': 3, 'blue': 4}
 
 
 class Paddle:
@@ -97,18 +97,22 @@ class HeartBonusLife:
 
 
 class Obstacle:
-    def __init__(self, x, y, width=40, height=20, color='red'):
+    def __init__(self, x, y, width=40, height=20, color='red', strength=1):
         self.pos = (x, y)
         self.color = color
         self.width = width
         self.height = height
+        self.strength = strength
 
     def draw(self):
         screen.draw.filled_rect(Rect(self.pos, (self.width, self.height)), self.color)
 
     def hits(self, ball: Ball):
-        distance = math.sqrt((ball.actor.x - self.pos[0])**2 +(ball.actor.y - self.pos[1])**2)
-        return (abs(self.pos[0] - ball.actor.x) < 40) and (abs(self.pos[1] - ball.actor.y) < 20)
+        if (abs(self.pos[0] - ball.actor.x) <= 40) and (abs(self.pos[1] - ball.actor.y) <= 20):
+            self.strength -= 1
+            ball.ball_dy *= -1
+            ball.ball_dx *= 1 if random.randint(0, 1) else -1
+        return self.strength == 0
 
 
 def create_barriers(n, dy, width, colors):
@@ -116,15 +120,19 @@ def create_barriers(n, dy, width, colors):
     barriers = []
     dx = (WIDTH - n * width) // (n + 1)
     for i in range(n):
+        pos_x = dx * (i + 1) + width * i
+        color = random.choice(colors)
         barriers.append(
-            Obstacle(dx * (i + 1) + width * i, dy, color=random.choice(colors))
+            Obstacle(pos_x, dy, color=color, strength=COLORS[color])
         )
 
     for i in range(n - 1):
         curr = barriers[i]
         next = barriers[i + 1]
+        pos_x = curr.pos[0] + (next.pos[0] - curr.pos[0]) // 2
+        color = random.choice(colors)
         barriers.append(
-            Obstacle(curr.pos[0] + (next.pos[0] - curr.pos[0]) // 2, dy + 30, color=random.choice(colors))
+            Obstacle(pos_x, dy + 30, color=color, strength=COLORS[color])
         )
     return barriers
 
@@ -166,9 +174,7 @@ for i in range(3):
 ball = Ball(5)
 platform = BigPlatform()
 heart_bonus = HeartBonusLife(random.randint(10, WIDTH-10), -10, 30)
-
-colors = ['red', 'green', 'yellow', 'blue']
-barriers = create_barriers(10, 70, 40, colors)
+barriers = create_barriers(10, 70, 40, list(COLORS.keys()))
 
 
 def draw():
@@ -190,7 +196,7 @@ def update(dt):
         screen.draw.text('Game Over', (170, 350), color="yellow", fontsize=75)
         return
     if len(barriers) == 0:
-        screen.draw.txt('   Win   ', (170, 350), color="yellow", fontsize=75)
+        screen.draw.text('   Win   ', (170, 350), color="yellow", fontsize=75)
         return
     ball.update()
     paddle.update(ball)
