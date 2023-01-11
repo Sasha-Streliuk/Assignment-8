@@ -2,6 +2,8 @@ import pgzrun
 import random
 from pgzero.actor import Actor
 import pygame
+from AddClasses import HeartBonusLife
+from AddClasses import BigPlatform
 
 WIDTH = 600
 HEIGHT = 800
@@ -65,35 +67,35 @@ class Heart:
         self.actor.draw()
 
 
-class HeartBonusLife:
-    def __init__(self, x, y, generate_time: int):
-        self.actor = Actor('heart.png', center=(x, y))
-        self.last = pygame.time.get_ticks()
-        self.cooldown = generate_time * 1000
-        self.hide = True
+# class HeartBonusLife:
+#     def __init__(self, x, y, generate_time: int):
+#         self.actor = Actor('heart.png', center=(x, y))
+#         self.last = pygame.time.get_ticks()
+#         self.cooldown = generate_time * 1000
+#         self.hide = True
 
-    def draw(self):
-        self.actor.draw()
+#     def draw(self):
+#         self.actor.draw()
 
-    def update(self):
-        global hearts_alive
-        if not self.hide:
-            self.actor.y += 5
+#     def update(self):
+#         global hearts_alive
+#         if not self.hide:
+#             self.actor.y += 5
 
-        if self.actor.colliderect(paddle.actor):
-            hearts_alive.append(Heart(len(hearts_alive)))
-            self.actor.pos = (-10, -10)
-            self.hide = True
+#         if self.actor.colliderect(paddle.actor):
+#             hearts_alive.append(Heart(len(hearts_alive)))
+#             self.actor.pos = (-10, -10)
+#             self.hide = True
 
-        if self.actor.y > HEIGHT + 20:
-            self.actor.pos = (-10, -10)
-            self.hide = True
+#         if self.actor.y > HEIGHT + 20:
+#             self.actor.pos = (-10, -10)
+#             self.hide = True
 
-        now = pygame.time.get_ticks()
-        if now - self.last >= self.cooldown:
-            self.last = now
-            self.hide = False
-            self.actor.pos = (random.randint(10, WIDTH - 10), 0)
+#         now = pygame.time.get_ticks()
+#         if now - self.last >= self.cooldown:
+#             self.last = now
+#             self.hide = False
+#             self.actor.pos = (random.randint(10, WIDTH - 10), 0)
 
 
 class Obstacle:
@@ -137,33 +139,33 @@ def create_barriers(n, dy, width, colors):
     return barriers
 
 
-class BigPlatform:
-    def __init__(self):
-        self.actor = Actor('big_platform.png', center=(WIDTH // 2, 0))
-        self.last = pygame.time.get_ticks()
-        self.cooldown = 10000
+# class BigPlatform:
+#     def __init__(self):
+#         self.actor = Actor('big_platform.png', center=(WIDTH // 2, 0))
+#         self.last = pygame.time.get_ticks()
+#         self.cooldown = 10000
 
-    def update(self):
-        self.actor.x += 1 if random.randint(0, 1) else 0
-        self.actor.y += 5
+#     def update(self):
+#         self.actor.x += 1 if random.randint(0, 1) else 0
+#         self.actor.y += 5
 
-        if self.actor.colliderect(paddle.actor):
-            self.actor.x = 500
-            self.actor.y = HEIGHT + 50
-            paddle.actor = Actor('big_paddle.png',center=(paddle.actor.x, paddle.actor.y))
-            self.last = pygame.time.get_ticks()
+#         if self.actor.colliderect(paddle.actor):
+#             self.actor.x = 500
+#             self.actor.y = HEIGHT + 50
+#             paddle.actor = Actor('big_paddle.png',center=(paddle.actor.x, paddle.actor.y))
+#             self.last = pygame.time.get_ticks()
 
-        now = pygame.time.get_ticks()
-        if now - self.last >= self.cooldown:
-            self.last = now
-            paddle.actor = Actor('paddle.png',center=(paddle.actor.x, paddle.actor.y))
+#         now = pygame.time.get_ticks()
+#         if now - self.last >= self.cooldown:
+#             self.last = now
+#             paddle.actor = Actor('paddle.png',center=(paddle.actor.x, paddle.actor.y))
 
-        if self.actor.y > HEIGHT + 50 and random.randint(0,10000) < 5:
-            self.actor.x = WIDTH // 2
-            self.actor.y = 0
+#         if self.actor.y > HEIGHT + 50 and random.randint(0,10000) < 5:
+#             self.actor.x = WIDTH // 2
+#             self.actor.y = 0
 
-    def draw(self):
-        self.actor.draw()
+#     def draw(self):
+#         self.actor.draw()
 
 
 loss = False
@@ -173,7 +175,7 @@ for i in range(3):
     hearts_alive.append(Heart(i))
 ball = Ball(5)
 platform = BigPlatform()
-heart_bonus = HeartBonusLife(random.randint(10, WIDTH-10), -10, 30)
+heart_bonus = HeartBonusLife(random.randint(10, WIDTH-10), -10, 30, hearts_alive)
 barriers = create_barriers(10, 70, 40, list(COLORS.keys()))
 
 
@@ -200,8 +202,8 @@ def update(dt):
         return
     ball.update()
     paddle.update(ball)
-    platform.update()
-    heart_bonus.update()
+    platform.update(paddle)
+    heart_bonus.update(paddle, Heart)
     for barrier in barriers:
         if barrier.hits(ball):
             barriers.remove(barrier)
