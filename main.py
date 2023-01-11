@@ -2,6 +2,7 @@ import pgzrun
 import random
 from pgzero.actor import Actor
 import pygame
+import time
 
 WIDTH = 600
 HEIGHT = 800
@@ -166,6 +167,28 @@ class BigPlatform:
         self.actor.draw()
 
 
+class GameMusic:
+    def __init__(self, start_file, game_win_file, game_over_file):
+        self.game_start = start_file
+        self.game_win = game_win_file
+        self.game_over = game_over_file
+
+    def play(self, mode='start'):
+
+        if mode == 'start':
+            music.play_once(self.game_start)
+
+        elif mode == 'win':
+            music.play_once(self.game_win)
+            time.sleep(4)
+
+        elif mode == 'over':
+            music.play_once(self.game_over)
+            time.sleep(4)
+
+
+music_obj = GameMusic('game_start.pm3', 'game_win.pm3', 'game_over.pm3')
+music_obj.play('start')
 loss = False
 paddle = Paddle()
 hearts_alive = []
@@ -194,9 +217,11 @@ def draw():
 def update(dt):
     if loss:
         screen.draw.text('Game Over', (170, 350), color="yellow", fontsize=75)
+        music_obj.play('over')
         return
     if len(barriers) == 0:
         screen.draw.text('   Win   ', (170, 350), color="yellow", fontsize=75)
+        music_obj.play('win')
         return
     ball.update()
     paddle.update(ball)
@@ -214,3 +239,4 @@ def on_mouse_move(pos):
 
 
 pgzrun.go()
+
